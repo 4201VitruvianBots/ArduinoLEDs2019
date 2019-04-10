@@ -6,6 +6,7 @@
 #define DIO10 10
 #define DIO9 9 
 unsigned long prevMillis = 0;
+int PrevColour = 0;
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -28,7 +29,7 @@ void setup() {
   pinMode(DIO10, INPUT);
   pinMode(DIO9, INPUT);
   strip.begin();  //start communication with NeoPixel strip
-  strip.setBrightness(50);  //set all pixels to 1/2 brightness
+  strip.setBrightness(255);  //set all pixels to full brightness
   strip.show(); // Initialize all pixels to 'off'
 }
 
@@ -47,22 +48,26 @@ void loop(){
   if(DIO9State){        // If the first binary digit is 1, that signifies "1"
     LEDColour = LEDColour+1;
   }
+  if(PrevColour != LEDColour){
+    fullStripSet(strip.Color(0,0,0));
+    PrevColour = LEDColour;
+  }
   if(ShifterState){ //If the shifters are in the lowest gear, we use the blinky lights.
     switch(LEDColour){
       case 0: //if the robot's disabled, we run the kittBounce animation green & with 30ms delay
         kittBounce(0,255,0,30);
       break;
       case 1:
-        TwoPixelBlink(strip.Color(0,64,255),100);  //If the robot's in manual hatch mode, blink the lights blue
+        TwoPixelBlink(strip.Color(0,64,255),100); //Colour 1 is blue
       break;
       case 2:
-        TwoPixelBlink(strip.Color(255,8,0),100); //If the robot's in cargo mode, blink the lights red
+        TwoPixelBlink(strip.Color(255,8,0),100); //Colour 2 is red
       break;
       case 3:
-        TwoPixelBlink(strip.Color(255,255,0),100); //If the robot's in hatch mode, blink the lights yellow
+        TwoPixelBlink(strip.Color(255,255,0),100); //Colour 3 is yellow
       break;
       case 4:
-        TwoPixelBlink(strip.Color(0,255,0),100);  //If the robot's acquired a hatch, blink the lights green
+        TwoPixelBlink(strip.Color(0,255,0),100);  //Colour 4 is green
       break;
       default:
         TwoPixelBlink(strip.Color(128,0,255),100);  //If there's something wrong, blink the lights purple. 
@@ -75,19 +80,19 @@ void loop(){
         kittBounce(0,255,0,30);
       break;
       case 1:
-        fullStripSet(strip.Color(0,64,255));  //If the robot's in manual hatch mode, turn the lights blue
+        fullStripSet(strip.Color(0,64,255));
       break;
       case 2:
-        fullStripSet(strip.Color(255,8,0)); //If the robot's in cargo mode, turn the lights red
+        fullStripSet(strip.Color(255,8,0));
       break;
       case 3:
-        fullStripSet(strip.Color(255,255,0)); //If the robot's in hatch mode, turn the lights yellow
+        fullStripSet(strip.Color(255,255,0));
       break;
       case 4:
-        fullStripSet(strip.Color(0,255,0));  //If the robot's acquired a hatch, turn the lights green
+        fullStripSet(strip.Color(0,255,0));
       break;
       default:
-        fullStripSet(strip.Color(128,0,255));  //If there's something wrong, turn the lights purple. 
+        fullStripSet(strip.Color(128,0,255));
       break;
     }
   }
